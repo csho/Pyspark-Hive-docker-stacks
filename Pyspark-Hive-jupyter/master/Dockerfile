@@ -1,5 +1,8 @@
-FROM csho/pyspark-hive-base
-# tag: csho/pyspark-hive-master
+FROM pyspark-hive-base
+# tag: pyspark-hive-master
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+USER root
 
 ENV NAMEDIR=/opt/hadoop/dfs/name
 RUN mkdir -p /opt/hadoop/dfs/name
@@ -13,10 +16,12 @@ ENV SPARK_PUBLIC_DNS=localhost
 ENV SPARK_LOGS_HDFS_PATH=/var/log/spark
 ENV SPARK_JARS_HDFS_PATH=/spark/jars
 
-RUN sudo pip install pandas openpyxl jupyter
+RUN pip install pandas openpyxl jupyter
 #RUN pip install -e $SPARK_HOME/python
-RUN sudo pip install findspark
+RUN pip install findspark
 
 COPY run.sh /usr/local/sbin/run.sh
 RUN sudo chmod a+x /usr/local/sbin/run.sh
 CMD ["run.sh"]
+
+USER $NB_USER

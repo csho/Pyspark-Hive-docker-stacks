@@ -1,5 +1,5 @@
 FROM jupyter/scipy-notebook
-# tag:  csho/pyspark-hive-base
+# tag:  pyspark-hive-base
 
 # Add RUN statements to install packages as the $NB_USER defined in the base images.
 
@@ -10,8 +10,11 @@ FROM jupyter/scipy-notebook
 # file to ensure the image runs as a unprivileged user by default.
 
 USER root
-
-RUN apt-get install -y --no-install-recommends \
+# arm : archive ;  amd: ports
+RUN rm -rf /var/lib/apt/lists/* \ 
+ && sed -i -e "s|http://ports.ubuntu.com|http://mirrors.aliyun.com|g" /etc/apt/sources.list \
+ && apt-get update  \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       openjdk-8-jdk \
       curl \
       gnupg \
@@ -26,9 +29,10 @@ ARG UID=${NB_UID}
 ARG GID=${NB_GID}
 
 
-USER $USERNAME
+USER root
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+# for arm ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64/
 
 # Hadoop
 ENV HADOOP_VERSION=3.3.1
